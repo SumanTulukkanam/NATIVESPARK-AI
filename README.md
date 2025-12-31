@@ -103,15 +103,8 @@ git clone https://github.com/SumanTulukkanam/NATIVESPARK-AI.git
 cd NATIVESPARK-AI
 ```
 
-### 2️⃣ Setup Backend
 
-```
-cd backend
-pip install -r requirements.txt
-python main.py
-```
-
-### 3️⃣ Run Frontend
+### 2️⃣ Run 
 
 * Open `pages/botinteraction.html` in your browser
 * Or use Live Server in VS Code
@@ -159,5 +152,6 @@ This project is for **academic and learning purposes**. Commercial use requires 
 ---
 
 ⭐ If you like this project, consider giving it a star on GitHub!
+
 
 
