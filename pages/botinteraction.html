@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeno - AI Language Learning Adventure</title>
+    <link rel="stylesheet" href="../css/botinteraction.css">
+      <!-- Favicon links for all sizes -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="icon" href="../assets/favicon.ico">
+    <link rel="manifest" href="../site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-modal">
+            <span>
+    <img src="../assets/favicon-32x32.png" alt="NativeSpark Logo" class="logo-icon"> 
+    <span class="auth-title">  Welcome to NativeSpark AI</span>
+</span>
+            <p class="auth-subtitle">Sign in with Google to start your personalized language learning journey with Zeno!</p>
+            
+            <div id="authLoading" class="loading hidden">
+                <div class="spinner"></div>
+                <span style="color: #2ecc71;">Signing you in...</span>
+            </div>
+            
+            <button id="googleSignInBtn" class="google-login-btn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- User Info Display -->
+    <div id="userInfo" class="user-info hidden">
+        <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+        <span id="userName" class="user-name"></span>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section">
+        <h1 class="main-title">NativeSpark AI</h1>
+        <p class="main-subtitle">Meet Zeno - Your Dynamic AI Language Learning Companion!</p>
+    </div>
+
+    <div class="main-container">
+        <!-- Astronaut Section -->
+        <div class="astronaut-section">
+            <img src="../assets/astronaut-WTFWARES copy.png" alt="Zeno" class="astronaut-image" id="astronautImage">
+            <div class="speech-bubble" id="speechBubble">🤖</div>
+        </div>
+
+        <!-- Story Section -->
+        <div class="story-section">
+            <button class="audio-control" id="audioControl" onclick="toggleAudio()">🔊</button>
+            
+            <div class="story-text large" id="storyText">
+                Hi there, friend! I'm Zeno, your AI language learning companion!
+            </div>
+            
+            <div id="interactionArea"></div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { 
+        auth, db, googleProvider, 
+        signInWithPopup, onAuthStateChanged, signOut,
+        doc, setDoc, getDoc, updateDoc ,deleteDoc
+    } from '../config/firebase-config.js';
+
+    import authManager from '../js/firebase-auth.js';
+    import pageManager from '../js/page-connection.js';
+
+    // Make Firebase available globally
+    window.db = db;
+    window.doc = doc;
+    window.setDoc = setDoc;
+    window.getDoc = getDoc;
+    window.updateDoc = updateDoc;
+    window.deleteDoc = deleteDoc;
+    window.auth = auth;
+
+    // Global state
+    let currentStep = 0;
+    let autoPlayEnabled = true;
+    let userProfile = {
+        targetLanguage: '',
+        teachingLanguage: 'en',
+        level: 'beginner',
+        userName: '',
+        userId: '',
+        email: '',
+        photoURL: '',
+        displayName: ''
+    };
+
+    let storyInitialized = false;
+    let authInitialized = false;
+    let authUnsubscribe = null;
+    let isProcessingAuth = false;
+
+    // Story Steps
+    const storySteps = [
+        {
+            text: "Hi there, friend! I'm Zeno, your AI language learning companion!",
+            action: "greeting",
+            autoNext: true,
+            delay: 4000
+        },
+        {
+            text: "I'm here to make learning languages super fun and exciting! Are you ready for an amazing adventure?",
+            action: "askReady",
+            choices: [
+                { text: "🚀 Yes, I'm ready!", value: "ready", class: "ready" }
+            ]
+        },
+        {
+            text: "Great! Tell me your native language so I can teach you clearly",
+            action: "selectTeachingLanguage",
+            choices: [
+                { text: "🇺🇸 English", value: "en", class: "language" },
+                { text: "🇮🇳 Tamil (தமிழ்)", value: "ta", class: "language" },
+                { text: "🇮🇳 Hindi (हिन्दी)", value: "hi", class: "language" },
+                { text: "🇫🇷 French (Français)", value: "fr", class: "language" },
+                { text: "🇩🇪 German (Deutsch)", value: "de", class: "language" }
+            ]
+        },
+        {
+            text: "Perfect! Now, which magical language would you like to explore and master?",
+            action: "selectTargetLanguage",
+            choices: [
+                { text: "🇺🇸 English", value: "en", class: "language" },
+                { text: "🇮🇳 Tamil (தமிழ்)", value: "ta", class: "language" },
+                { text: "🇮🇳 Hindi (हिन्दी)", value: "hi", class: "language" },
+                { text: "🇫🇷 French (Français)", value: "fr", class: "language" },
+                { text: "🇩🇪 German (Deutsch)", value: "de", class: "language" }
+            ]
+        },
+        {
+            text: "Amazing! Your profile is complete!",
+            action: "complete",
+            autoNext: false,
+            onShow: showUserProfile
+        }
+    ];
+
+    async function checkExistingUser() {
+        try {
+            if (auth.currentUser) {
+                const userRef = doc(db, 'users', auth.currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists() && userDoc.data().profileComplete) {
+                    console.log('🔄 Existing user detected, redirecting to home...');
+                    
+                    // Load their profile and redirect
+                    const existingProfile = userDoc.data();
+                    sessionStorage.setItem('userProfile', JSON.stringify(existingProfile));
+                    localStorage.setItem('userAuthenticated', 'true');
+                    
+                    window.location.href = 'home-ai.html';
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.log('ℹ️ Error checking existing user:', error);
+        }
+        return false;
+    }
+
+    async function initializeAuthentication() {
+        if (authInitialized) {
+            console.log('⚠️ Auth already initialized');
+            return;
+        }
+
+        console.log('🔐 Initializing authentication...');
+        authInitialized = true;
+
+        const shouldRedirect = await checkExistingUser();
+        if (shouldRedirect) return;
+
+        authUnsubscribe = onAuthStateChanged(auth, async (user) => {
+            console.log('🔄 Auth state changed:', user ? user.email : 'No user');
+            
+            if (isProcessingAuth) {
+                console.log('⏳ Auth processing in progress...');
+                return;
+            }
+            
+            isProcessingAuth = true;
+            
+            try {
+                if (user) {
+                    await handleUserSignedIn(user);
+                } else {
+                    handleUserSignedOut();
+                }
+            } catch (error) {
+                console.error('❌ Auth state handler error:', error);
+            } finally {
+                isProcessingAuth = false;
+            }
+        });
+
+        setupEventListeners();
+    }
+
+    async function handleUserSignedIn(user) {
+        console.log('✅ User signed in:', user.displayName);
+        
+        try {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+            
+            if (userDoc.exists() && userDoc.data().profileComplete) {
+                console.log('✅ Complete profile found, redirecting...');
+                
+                const existingProfile = userDoc.data();
+                sessionStorage.setItem('userProfile', JSON.stringify(existingProfile));
+                localStorage.setItem('userAuthenticated', 'true');
+                
+                window.location.href = 'home-ai.html';
+                return;
+            }
+        } catch (error) {
+            console.log('ℹ️ No complete profile, continuing setup...');
+        }
+        
+        // Setup profile for new user
+        window.currentUser = user;
+        userProfile.userName = user.displayName || 'Friend';
+        userProfile.userId = user.uid;
+        userProfile.email = user.email;
+        userProfile.photoURL = user.photoURL;
+        userProfile.displayName = user.displayName;
+
+        updateUserUI(user);
+
+        if (!storyInitialized) {
+            console.log('🤖 Starting bot interaction...');
+            storyInitialized = true;
+            await initializeBotInteraction();
+        }
+    }
+
+    function handleUserSignedOut() {
+        console.log('❌ User signed out');
+        
+        window.currentUser = null;
+        userProfile = {
+            targetLanguage: '',
+            teachingLanguage: 'en',
+            level: 'beginner',
+            userName: '',
+            userId: '',
+            email: '',
+            photoURL: '',
+            displayName: ''
+        };
+        storyInitialized = false;
+        currentStep = 0;
+        
+        document.getElementById('authOverlay').classList.remove('hidden');
+        document.getElementById('userInfo').classList.add('hidden');
+        document.getElementById('interactionArea').innerHTML = '';
+        document.getElementById('storyText').textContent = "Hi there, friend! I'm Zeno, your AI language learning companion!";
+    }
+
+    function updateUserUI(user) {
+        document.getElementById('authOverlay').classList.add('hidden');
+        
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const userNameEl = document.getElementById('userName');
+        
+        userAvatar.src = user.photoURL || 'https://via.placeholder.com/35';
+        userNameEl.textContent = userProfile.userName;
+        userInfo.classList.remove('hidden');
+    }
+
+    function setupEventListeners() {
+        const signInBtn = document.getElementById('googleSignInBtn');
+        if (signInBtn && !signInBtn.dataset.listenerAttached) {
+            signInBtn.dataset.listenerAttached = 'true';
+            signInBtn.addEventListener('click', async () => {
+                const authLoading = document.getElementById('authLoading');
+                
+                try {
+                    authLoading.classList.remove('hidden');
+                    signInBtn.style.display = 'none';
+                    
+                    await signInWithPopup(auth, googleProvider);
+                    console.log('✅ Sign-in successful');
+                    
+                } catch (error) {
+                    console.error('❌ Sign in error:', error);
+                    
+                    let errorMessage = 'Sign in failed. ';
+                    switch (error.code) {
+                        case 'auth/popup-closed-by-user':
+                            errorMessage += 'Sign-in window was closed.';
+                            break;
+                        case 'auth/popup-blocked':
+                            errorMessage += 'Popup blocked. Please allow popups.';
+                            break;
+                        default:
+                            errorMessage += error.message;
+                    }
+                    
+                    alert(errorMessage);
+                    authLoading.classList.add('hidden');
+                    signInBtn.style.display = 'flex';
+                }
+            });
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn && !logoutBtn.dataset.listenerAttached) {
+            logoutBtn.dataset.listenerAttached = 'true';
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    sessionStorage.clear();
+                    localStorage.removeItem('userAuthenticated');
+                } catch (error) {
+                    console.error('❌ Sign out error:', error);
+                }
+            });
+        }
+    }
+
+    async function initializeBotInteraction() {
+        console.log('🤖 Bot interaction starting...');
+        updateStoryStepsWithUserName();
+        startStoryApp();
+    }
+
+    function updateStoryStepsWithUserName() {
+        if (userProfile.userName) {
+            storySteps[0].text = `Hi there, ${userProfile.userName}! I'm Zeno, your AI language learning companion!`;
+        }
+    }
+
+   function startStoryApp() {
+    console.log('🎮 Starting story...');
+    currentStep = 0;
+    showCurrentStep();
+}
+
+    
+
+    function updateStoryText(text) {
+        const storyText = document.getElementById('storyText');
+        storyText.textContent = text;
+        storyText.classList.add('speaking');
+        
+        if (autoPlayEnabled) {
+            setTimeout(() => speakText(text), 500);
+        }
+        
+        setTimeout(() => {
+            storyText.classList.remove('speaking');
+        }, 3000);
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window && autoPlayEnabled) {
+            speechSynthesis.cancel();
+            
+            setTimeout(() => {
+                setRobotEmotion('speaking');
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.2;
+                utterance.volume = 1.0;
+                
+                utterance.onend = () => setRobotEmotion('happy');
+                utterance.onerror = () => setRobotEmotion('happy');
+                
+                speechSynthesis.speak(utterance);
+            }, 200);
+        }
+    }
+
+    function showChoices(choices) {
+        const interactionArea = document.getElementById('interactionArea');
+        
+        if (!choices || choices.length === 0) {
+            interactionArea.innerHTML = '<button class="continue-button" onclick="nextStep()">Continue →</button>';
+            return;
+        }
+        
+        const choicesHTML = choices.map(choice => 
+            `<button class="choice-button ${choice.class}" onclick="makeChoice('${choice.value}')">${choice.text}</button>`
+        ).join('');
+        
+        interactionArea.innerHTML = `<div class="choice-buttons">${choicesHTML}</div>`;
+    }
+
+    function makeChoice(value) {
+        console.log('User choice:', value);
+        
+        const step = storySteps[currentStep];
+        
+        if (step.action === 'askReady') {
+            setRobotEmotion('excited');
+        } else if (step.action === 'selectTeachingLanguage') {
+            userProfile.teachingLanguage = value;
+            setRobotEmotion('excited');
+        } else if (step.action === 'selectTargetLanguage') {
+            userProfile.targetLanguage = value;
+            setRobotEmotion('excited');
+        }
+        
+        document.getElementById('interactionArea').innerHTML = '';
+        setTimeout(() => nextStep(), 1000);
+    }
+
+    function nextStep() {
+        if (currentStep < storySteps.length - 1) {
+            currentStep++;
+            showCurrentStep();
+        }
+    }
+function showCurrentStep() {
+    const step = storySteps[currentStep];
+    
+    if (!step) {
+        console.error('❌ Invalid step:', currentStep);
+        return;
+    }
+    
+    console.log('📖 Showing step:', currentStep, step.action);
+    
+    // Update story text
+    updateStoryText(step.text);
+    
+    // Clear interaction area first
+    document.getElementById('interactionArea').innerHTML = '';
+    
+    // Handle step display based on type
+    const delay = step.autoNext ? (step.delay || 3000) : 500;
+    
+    setTimeout(() => {
+        if (step.onShow && typeof step.onShow === 'function') {
+            step.onShow();
+        } else if (step.choices) {
+            showChoices(step.choices);
+        }
+        
+        if (step.autoNext) {
+            setTimeout(() => nextStep(), step.delay || 3000);
+        }
+    }, delay);
+}
+    async function showUserProfile() {
+        console.log('✅ Creating complete profile:', userProfile);
+        
+        if (!window.currentUser) {
+            console.error('❌ No authenticated user found!');
+            showMessage('Authentication error. Please sign in again.');
+            return;
+        }
+        
+        // Create COMPLETE profile with ALL necessary data
+        const completeProfile = {
+            // Basic user info
+            userId: userProfile.userId,
+            displayName: userProfile.displayName || userProfile.userName,
+            userName: userProfile.userName,
+            email: userProfile.email,
+            photoURL: userProfile.photoURL,
+            
+            // Language settings
+            targetLanguage: userProfile.targetLanguage,
+            teachingLanguage: userProfile.teachingLanguage,
+            level: userProfile.level,
+            
+            // Profile status
+            profileComplete: true,
+            createdAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString(),
+            
+            // Preferences
+            preferences: {
+                dailyGoal: 30,
+                difficulty: 'adaptive',
+                notifications: true,
+                soundEffects: true,
+                autoPlayAudio: true
+            },
+            
+            // Progress tracking
+            progress: {
+                overall: 0,
+                lessonsCompleted: 0,
+                currentStreak: 1,
+                longestStreak: 1,
+                totalXp: 0,
+                daysLearning: 1,
+                lastPracticeDate: new Date().toISOString(),
+                totalTimeMinutes: 0
+            },
+            
+            // Modules status
+            modules: {
+                alphabets: { 
+                    completed: false, 
+                    progress: 0, 
+                    locked: false,
+                    lastAccessed: null,
+                    score: 0
+                },
+                vocabulary: { 
+                    completed: false, 
+                    progress: 0, 
+                    locked: true,
+                    lastAccessed: null,
+                    score: 0
+                },
+                grammar: { 
+                    completed: false, 
+                    progress: 0, 
+                    locked: true,
+                    lastAccessed: null,
+                    score: 0
+                },
+                assessment: { 
+                    completed: false, 
+                    progress: 0, 
+                    locked: true,
+                    lastAccessed: null,
+                    score: 0
+                }
+            },
+            
+            // Gamification
+            gamification: {
+                level: 1,
+                xp: 0,
+                badges: ['first_steps'],
+                achievements: [],
+                streak: 1,
+                totalPoints: 0
+            },
+            
+            // AI Analytics
+            aiAnalytics: {
+                learningPattern: 'adaptive',
+                pace: 'moderate',
+                strongAreas: [],
+                weakAreas: [],
+                recommendations: [],
+                lastAnalysis: new Date().toISOString(),
+                practiceHistory: []
+            },
+            
+            // Dictionary history
+            dictionaryHistory: [],
+            
+            // Statistics
+            statistics: {
+                totalLessons: 0,
+                totalPractices: 0,
+                averageScore: 0,
+                wordsLearned: 0,
+                perfectScores: 0
+            }
+        };
+        
+        try {
+            console.log('💾 Saving complete profile to Firestore...');
+            
+            // Save to Firestore
+            const userRef = doc(db, 'users', window.currentUser.uid);
+            await setDoc(userRef, completeProfile, { merge: true });
+            console.log('✅ Profile saved successfully!');
+            
+            // Save to ALL storage locations for redundancy
+            sessionStorage.setItem('userProfile', JSON.stringify(completeProfile));
+            localStorage.setItem('userProfile', JSON.stringify(completeProfile));
+            localStorage.setItem('userAuthenticated', 'true');
+            
+            // Set navigation flags
+            sessionStorage.setItem('fromBotInteraction', 'true');
+            sessionStorage.setItem('justLoggedIn', 'true');
+            sessionStorage.setItem('profileSetupComplete', 'true');
+            
+            console.log('✅ Profile saved to all storage locations');
+            
+            // Update UI
+            updateStoryText("Perfect! Your AI-powered learning profile is ready!");
+            
+            setTimeout(() => {
+                const interactionArea = document.getElementById('interactionArea');
+                interactionArea.innerHTML = `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <div class="profile-summary">
+                            <h3>🎉 Setup Complete!</h3>
+                            <div class="profile-details">
+                                <p><strong>Welcome:</strong> ${completeProfile.displayName}</p>
+                                <p><strong>Native Language:</strong> ${getLanguageName(completeProfile.teachingLanguage)}</p>
+                                <p><strong>Learning:</strong> ${getLanguageName(completeProfile.targetLanguage)}</p>
+                                <p><strong>Level:</strong> ${completeProfile.level}</p>
+                            </div>
+                        </div>
+                        <button class="continue-button" onclick="goToHome()" 
+                            style="background: linear-gradient(135deg, #2ecc71, #27ae60); 
+                                   font-size: 22px; padding: 15px 40px; border: none; 
+                                   border-radius: 25px; color: white; cursor: pointer; 
+                                   font-weight: 600; margin-top: 20px;">
+                            🚀 Start Learning Journey
+                        </button>
+                    </div>
+                `;
+            }, 1500);
+            
+        } catch (error) {
+            console.error('❌ Profile save error:', error);
+            showMessage('Failed to create profile: ' + error.message);
+        }
+    }
+
+    window.goToHome = function() {
+        console.log('🚀 Navigating to home page...');
+        
+        // Verify profile is saved before navigating
+        const savedProfile = sessionStorage.getItem('userProfile');
+        if (!savedProfile) {
+            console.error('❌ Profile not found in session storage!');
+            alert('Error: Profile not saved. Please try again.');
+            return;
+        }
+        
+        console.log('✅ Profile verified, navigating...');
+        
+        // Show loading state
+        updateStoryText("Launching your personalized dashboard...");
+        document.getElementById('interactionArea').innerHTML = `
+            <div style="text-align: center; margin-top: 20px;">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Preparing your AI learning environment...</span>
+                </div>
+            </div>
+        `;
+        
+        // Navigate after short delay
+        setTimeout(() => {
+            window.location.href = 'home-ai.html';
+        }, 1500);
+    };
+
+    function setRobotEmotion(emotion) {
+        const astronautImage = document.getElementById('astronautImage');
+        astronautImage.className = 'astronaut-image';
+        
+        if (emotion === 'speaking' || emotion === 'excited') {
+            astronautImage.classList.add(emotion);
+            showSpeechBubble(emotion === 'speaking' ? '🗣️' : '✨');
+        } else {
+            hideSpeechBubble();
+        }
+    }
+
+    function showSpeechBubble(emoji) {
+        const bubble = document.getElementById('speechBubble');
+        bubble.textContent = emoji;
+        bubble.classList.add('show');
+    }
+
+    function hideSpeechBubble() {
+        document.getElementById('speechBubble').classList.remove('show');
+    }
+
+    function toggleAudio() {
+        autoPlayEnabled = !autoPlayEnabled;
+        const audioControl = document.getElementById('audioControl');
+        audioControl.textContent = autoPlayEnabled ? '🔊' : '🔇';
+        audioControl.style.background = autoPlayEnabled ? 
+            'linear-gradient(135deg, #2ecc71, #27ae60)' : 
+            'linear-gradient(135deg, #e74c3c, #c0392b)';
+        
+        if (!autoPlayEnabled) {
+            speechSynthesis.cancel();
+            setRobotEmotion('happy');
+        }
+    }
+
+    function showMessage(message) {
+        const interactionArea = document.getElementById('interactionArea');
+        interactionArea.innerHTML = `<div class="message">${message}</div>`;
+    }
+
+    function getLanguageName(code) {
+        const languages = {
+            'en': 'English',
+            'ta': 'Tamil',
+            'hi': 'Hindi',
+            'fr': 'French',
+            'de': 'German'
+        };
+        return languages[code] || code;
+    }
+
+    // Make functions globally available
+    window.makeChoice = makeChoice;
+    window.nextStep = nextStep;
+    window.toggleAudio = toggleAudio;
+
+    // Initialize
+    console.log('🚀 Starting NativeSpark AI...');
+    initializeAuthentication();
+
+    // Cleanup
+    window.addEventListener('beforeunload', () => {
+        if (authUnsubscribe) {
+            authUnsubscribe();
+        }
+        speechSynthesis.cancel();
+    });
+</script>
+</body>
+</html>

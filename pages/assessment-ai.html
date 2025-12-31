@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment - NativeSpark</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/alphabets.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="../assets/favicon-32x32.png" alt="NativeSpark Logo" class="logo-icon">
+            NativeSpark AI
+        </div>
+        <div class="header-actions">
+            <button id="initBtn" class="continue-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                🔊 Enable TTS
+            </button>
+            <button class="continue-btn" onclick="goHome()" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+                🏠 Home
+            </button>
+        </div>
+        <div class="user-header">
+            <div class="user-profile">
+                <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+                <span id="userName">Learner</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- TTS Status -->
+    <div id="ttsStatus" style="background: transparent; padding: 10px; text-align: center; font-size: 14px; color: #666;">
+        TTS System: Click "Enable TTS" button to activate audio
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Assessment Content Section -->
+        <section class="welcome-section" style="margin-bottom: 20px;">
+            <div class="lesson-header">
+                <h2 id="lessonTitle" class="welcome-title">Loading Assessment...</h2>
+                <p id="lessonDescription" class="welcome-subtitle">Please wait...</p>
+                <div class="learning-info">
+                    <div class="info-item">
+                        <div class="info-label">Test</div>
+                        <div class="info-value" id="lessonNumber">1 / 2</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Level</div>
+                        <div class="info-value" id="targetLanguage">Beginner</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Time</div>
+                        <div class="info-value" id="timeLimit">30 min</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assessment Sections -->
+        <section class="modules-section" id="sectionsContainer">
+            <h2 class="section-title">📝 Assessment Sections</h2>
+            <div id="assessmentSections" class="modules-grid"></div>
+        </section>
+
+        <!-- Questions Container -->
+        <section class="modules-section" id="questionsSection" style="display: none;">
+            <h2 class="section-title" id="currentSectionTitle">Questions</h2>
+            <div id="questionsContainer" style="background-color: transparent; color: #666;"></div>
+        </section>
+
+        <!-- Navigation Buttons -->
+        <section class="quick-actions">
+            <div class="actions-grid">
+                <button class="action-btn secondary" id="prevSectionBtn" onclick="previousSection()" style="display: none;">
+                    <span class="action-icon">◀</span>
+                    <span class="action-text">Previous Section</span>
+                </button>
+                <button class="action-btn" id="startAssessmentBtn" onclick="startAssessment()">
+                    <span class="action-icon">🚀</span>
+                    <span class="action-text">Start Assessment</span>
+                </button>
+
+               <button class="action-btn" id="completeModuleBtn" onclick="completeModule('assessment')"
+                style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">
+            <span class="action-icon">✅</span>
+    <span class="action-text">Complete Assessment</span>
+        </button>
+               
+                <button class="action-btn" id="nextSectionBtn" onclick="nextSection()" style="display: none;">
+                    <span class="action-icon">▶</span>
+                    <span class="action-text">Next Section</span>
+                </button>
+                <button class="action-btn" id="submitAssessmentBtn" onclick="submitAssessment()" style="display: none; background: #4CAF50;">
+                    <span class="action-icon">📤</span>
+                    <span class="action-text">Submit Assessment</span>
+                </button>
+                
+            </div>
+        </section>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="modal-overlay" style="display: none;">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">🎓 Assessment Results</h3>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section" style="text-align: center;">
+                    <h4 id="resultsMessage" class="section-heading">Assessment Completed!</h4>
+                    <div class="stats-grid" style="margin-top: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Score</div>
+                                <div class="stat-value" id="assessmentScore">0%</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Time</div>
+                                <div class="stat-value" id="assessmentTime">0 min</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Level</div>
+                                <div class="stat-value" id="assessmentLevel">Beginner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="certificateSection" style="margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 10px; display: none;">
+                        <h5 style="color: #4CAF50; margin: 0;">🏆 Certificate Earned!</h5>
+                        <p style="margin: 10px 0 0 0; color: #666;">You've successfully completed this assessment level!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeResults()">
+                    Return to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="modal-overlay" style="display: flex;">
+        <div style="text-align: center; color: white;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🎓</div>
+            <h2>Loading Assessment...</h2>
+        </div>
+    </div>
+
+    <!-- SINGLE SCRIPT TAG - NO DUPLICATES -->
+    <script type="module">
+        import learningEngine from '../js/learning-engine.js';
+        import { auth, db, doc, getDoc } from '../config/firebase-config.js';
+
+        // Global variables
+        let currentUser = null;
+        let userProfile = null;
+        let currentModule = 'assessment';
+        let currentLessonIndex = 0;
+        let currentLesson = null;
+        let assessmentStartTime = null;
+        let userAnswers = {};
+        let currentSectionIndex = 0;
+
+        // Get module from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentModule = urlParams.get('module') || 'assessment';
+
+        // Initialize page
+        async function initializePage() {
+    try {
+        console.log('🚀 Starting page initialization...');
+        
+        // Show loading overlay
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        // Step 1: Load user profile
+        console.log('👤 Loading user profile...');
+        await loadUserProfile();
+        console.log('✅ User profile loaded');
+
+        // Step 2: Setup TTS (non-blocking)
+        console.log('🔊 Setting up TTS...');
+        setupTTSControls();
+        console.log('✅ TTS setup complete');
+
+        // Step 3: Load lesson
+        console.log('📖 Loading lesson...');
+       await loadAssessment();
+        console.log('✅ Lesson loaded');
+
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+
+        console.log('✅ Page initialization complete');
+
+    } catch (error) {
+        console.error('❌ Initialization error:', error);
+        
+        // Hide loading and show error
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.innerHTML = `
+                <div style="text-align: center; color: white;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <h2>Error Loading Lesson</h2>
+                    <p style="margin: 20px; max-width: 500px;">${error.message}</p>
+                    <button onclick="window.location.reload()" 
+                            style="background: #4CAF50; color: white; border: none; 
+                                   padding: 15px 30px; border-radius: 8px; cursor: pointer; 
+                                   font-size: 16px; margin: 10px;">
+                        🔄 Retry
+                    </button>
+                    <button onclick="window.location.href='home-ai.html'" 
+                            style="background: #2196F3; color: white; border: none; 
+                                   padding: 15px 30px; border-radius: 8px; cursor: pointer; 
+                                   font-size: 16px; margin: 10px;">
+                        🏠 Go Home
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Alert user
+        alert(`Failed to load lesson: ${error.message}\n\nPlease try again or return to home.`);
+    }
+}
+        function setupTTSControls() {
+            const initBtn = document.getElementById('initBtn');
+            const statusDiv = document.getElementById('ttsStatus');
+
+            initBtn.addEventListener('click', async () => {
+                try {
+                    initBtn.disabled = true;
+                    initBtn.textContent = '🔄 Initializing...';
+                    
+                    const success = learningEngine.initializeTTS();
+                    
+                    if (success) {
+                        statusDiv.innerHTML = '✅ <strong>TTS System Ready!</strong> Audio support enabled for assessment';
+                        statusDiv.style.color = '#4CAF50';
+                        initBtn.textContent = '✅ TTS Enabled';
+                        initBtn.style.background = '#45a049';
+                    }
+                } catch (error) {
+                    statusDiv.innerHTML = '❌ <strong>TTS Failed:</strong> ' + error.message;
+                    statusDiv.style.color = '#f44336';
+                    initBtn.disabled = false;
+                }
+            });
+        }
+
+       async function loadUserProfile() {
+    try {
+        console.log('👤 Loading user profile...');
+
+        // Try session storage first
+        const storedProfile = sessionStorage.getItem('userProfile');
+        if (storedProfile) {
+            try {
+                userProfile = JSON.parse(storedProfile);
+                console.log('✅ Profile loaded from session:', userProfile.displayName);
+                updateProfileUI();
+                return;
+            } catch (e) {
+                console.warn('Failed to parse session profile:', e);
+            }
+        }
+
+        // Try localStorage
+        const localProfile = localStorage.getItem('userProfile');
+        if (localProfile) {
+            try {
+                userProfile = JSON.parse(localProfile);
+                console.log('✅ Profile loaded from local storage:', userProfile.displayName);
+                sessionStorage.setItem('userProfile', localProfile);
+                updateProfileUI();
+                return;
+            } catch (e) {
+                console.warn('Failed to parse local profile:', e);
+            }
+        }
+
+        // Try Firebase if authenticated
+        if (auth.currentUser) {
+            console.log('Fetching profile from Firebase...');
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            
+            if (userDoc.exists()) {
+                userProfile = userDoc.data();
+                console.log('✅ Profile loaded from Firebase:', userProfile.displayName);
+                
+                // Cache it
+                sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                
+                updateProfileUI();
+                return;
+            }
+        }
+
+        // No profile found anywhere
+        throw new Error('User profile not found. Please complete setup from home page.');
+
+    } catch (error) {
+        console.error('❌ Error loading profile:', error);
+        throw error;
+    }
+}
+
+function updateProfileUI() {
+    if (!userProfile) return;
+    
+    const userNameEl = document.getElementById('userName');
+    const userAvatarEl = document.getElementById('userAvatar');
+    
+    if (userNameEl) {
+        userNameEl.textContent = userProfile.displayName || 'Learner';
+    }
+    
+    if (userAvatarEl && userProfile.photoURL) {
+        userAvatarEl.src = userProfile.photoURL;
+        userAvatarEl.onerror = () => {
+            userAvatarEl.src = 'https://via.placeholder.com/35';
+        };
+    }
+}
+
+// FIXED: Make sure initialization runs properly
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📄 DOM loaded, initializing...');
+        initializePage();
+    });
+} else {
+    console.log('📄 DOM already ready, initializing...');
+    initializePage();
+}
+
+// Add timeout fallback
+setTimeout(() => {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay && loadingOverlay.style.display !== 'none') {
+        console.warn('⏰ Loading timeout - forcing initialization');
+        initializePage();
+    }
+}, 5000); // 5 second timeout
+
+        async function loadAssessment() {
+            try {
+                const result = await learningEngine.getLesson(currentModule, userProfile.targetLanguage, currentLessonIndex);
+                if (!result.success) throw new Error(result.error);
+                
+                currentLesson = result.lesson;
+                document.getElementById('lessonTitle').textContent = currentLesson.title;
+                document.getElementById('lessonDescription').textContent = currentLesson.content;
+                document.getElementById('lessonNumber').textContent = `${result.currentLesson} / ${result.totalLessons}`;
+                document.getElementById('targetLanguage').textContent = getLanguageName(userProfile.targetLanguage);
+                document.getElementById('timeLimit').textContent = `${currentLesson.scoring?.timeLimit || 30} min`;
+
+                displayAssessmentSections();
+                updateNavigationButtons(result.currentLesson, result.totalLessons);
+            } catch (error) {
+                console.error('❌ Error loading assessment:', error);
+                alert('Assessment could not be loaded.');
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        function displayAssessmentSections() {
+            const container = document.getElementById('assessmentSections');
+            container.innerHTML = '';
+            
+            if (!currentLesson.sections || currentLesson.sections.length === 0) {
+                container.innerHTML = '<p>No assessment sections available.</p>';
+                return;
+            }
+
+            currentLesson.sections.forEach((section, index) => {
+                const card = document.createElement('div');
+                card.className = 'module-card';
+                card.innerHTML = `
+                    <div class="module-icon" style="font-size: 32px;">${getSectionIcon(section.name)}</div>
+                    <div class="module-title">${section.name}</div>
+                    <div class="module-description">
+                        ${section.questions?.length || 0} questions
+                        ${section.questions?.[0]?.type ? ` • ${section.questions[0].type}` : ''}
+                    </div>
+                    <div class="section-status" id="sectionStatus-${index}" style="margin-top: 10px; font-size: 12px; color: #666;">
+                        Not started
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+       function displayCurrentSection() {
+    const section = currentLesson.sections[currentSectionIndex];
+    const container = document.getElementById('questionsContainer');
+    const title = document.getElementById('currentSectionTitle');
+    
+    title.textContent = `${section.name} (${currentSectionIndex + 1}/${currentLesson.sections.length})`;
+    container.innerHTML = '';
+
+    section.questions.forEach((question, qIndex) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'stat-card';
+        questionDiv.style.marginBottom = '25px';
+        questionDiv.style.padding = '20px';
+        
+        let questionHTML = '';
+        
+        switch (question.type) {
+            case 'multiple-choice':
+                questionHTML = `
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 20px; font-weight: 500;">
+                        ${qIndex + 1}. ${question.question}
+                    </div>
+                    <div class="options-container">
+                        ${question.options.map((option, oIndex) => `
+                            <label class="option-label" style="display: block; padding: 12px 15px; margin: 8px 0; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+                                <input type="radio" name="question-${currentSectionIndex}-${qIndex}" value="${option}" style="margin-right: 10px;">
+                                ${String.fromCharCode(65 + oIndex)}. ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                break;
+                
+            case 'matching':
+                questionHTML = `
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 20px; font-weight: 500;">
+                        ${qIndex + 1}. ${question.question}
+                    </div>
+                    <div class="matching-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="matching-items">
+                            <strong>Items:</strong>
+                            ${question.pairs.map(pair => `
+                                <div style="padding: 8px; margin: 5px 0; background: #f8f9fa; border-radius: 5px;">
+                                    ${pair.item}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="matching-options">
+                            <strong>Options:</strong>
+                            ${question.pairs[0].options.map(option => `
+                                <div style="padding: 8px; margin: 5px 0; background: #e3f2fd; border-radius: 5px;">
+                                    ${option}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="matching-inputs" style="margin-top: 15px;">
+                        ${question.pairs.map((pair, pIndex) => `
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <span style="min-width: 100px;">${pair.item} = </span>
+                                <input type="text" 
+                                       id="match-${currentSectionIndex}-${qIndex}-${pIndex}"
+                                       placeholder="Enter option"
+                                       style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px;">
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                break;
+                
+            case 'fill-blank':
+                // FIXED: Create input separately and append it
+                const parts = question.question.split('___');
+                questionHTML = `
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 20px; font-weight: 500;">
+                        ${qIndex + 1}. ${parts[0]}
+                        <input type="text" 
+                               id="fill-${currentSectionIndex}-${qIndex}" 
+                               class="fill-blank-input"
+                               placeholder="..."
+                               style="padding: 8px 12px; border: 2px solid #667eea; border-radius: 5px; min-width: 120px; font-size: 16px; text-align: center; margin: 0 5px;">
+                        ${parts[1] || ''}
+                    </div>
+                `;
+                break;
+                
+            case 'sentence-correction':
+                // FIXED: Change to multiple-choice style for easier selection
+                questionHTML = `
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 20px; font-weight: 500;">
+                        ${qIndex + 1}. ${question.question}
+                    </div>
+                    <div class="correction-note" style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
+                        <strong>📝 Choose the correct sentence:</strong>
+                    </div>
+                    <div class="options-container">
+                        ${question.options.map((option, oIndex) => `
+                            <label class="option-label" style="display: block; padding: 12px 15px; margin: 8px 0; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+                                <input type="radio" name="question-${currentSectionIndex}-${qIndex}" value="${option}" style="margin-right: 10px;">
+                                ${String.fromCharCode(65 + oIndex)}. ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                break;
+                
+            case 'comprehension':
+                questionHTML = `
+                    <div class="passage" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; font-style: italic;">
+                        ${question.passage}
+                    </div>
+                    ${question.questions.map((subQ, subIndex) => `
+                        <div class="sub-question" style="margin-bottom: 15px;">
+                            <div class="question-text" style="font-size: 16px; margin-bottom: 10px; font-weight: 500;">
+                                ${qIndex + 1}.${subIndex + 1}. ${subQ.question}
+                            </div>
+                            <div class="options-container">
+                                ${subQ.options.map((option, oIndex) => `
+                                    <label class="option-label" style="display: block; padding: 10px 12px; margin: 5px 0; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                        <input type="radio" name="comp-${currentSectionIndex}-${qIndex}-${subIndex}" value="${option}" style="margin-right: 8px;">
+                                        ${String.fromCharCode(65 + oIndex)}. ${option}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+                break;
+                
+            default:
+                questionHTML = `
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 20px; font-weight: 500;">
+                        ${qIndex + 1}. ${question.question}
+                    </div>
+                    <input type="text" 
+                           id="text-${currentSectionIndex}-${qIndex}"
+                           placeholder="Type your answer..."
+                           style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+                `;
+        }
+        
+        questionDiv.innerHTML = questionHTML;
+        container.appendChild(questionDiv);
+    });
+
+    // Show questions section
+    document.getElementById('sectionsContainer').style.display = 'none';
+    document.getElementById('questionsSection').style.display = 'block';
+    
+    // Update navigation
+    document.getElementById('prevSectionBtn').style.display = currentSectionIndex > 0 ? 'block' : 'none';
+    document.getElementById('nextSectionBtn').style.display = currentSectionIndex < currentLesson.sections.length - 1 ? 'block' : 'none';
+    document.getElementById('submitAssessmentBtn').style.display = currentSectionIndex === currentLesson.sections.length - 1 ? 'block' : 'none';
+    document.getElementById('startAssessmentBtn').style.display = 'none';
+}
+        function getSectionIcon(sectionName) {
+            const icons = {
+                'Vocabulary': '📚',
+                'Grammar': '📝', 
+                'Reading Comprehension': '📖',
+                'Listening': '🎧',
+                'Writing': '✍️'
+            };
+            return icons[sectionName] || '❓';
+        }
+
+        window.startAssessment = function() {
+            assessmentStartTime = Date.now();
+            currentSectionIndex = 0;
+            userAnswers = {};
+            displayCurrentSection();
+        };
+
+        window.nextSection = function() {
+            saveCurrentSectionAnswers();
+            currentSectionIndex++;
+            displayCurrentSection();
+        };
+
+        window.previousSection = function() {
+            saveCurrentSectionAnswers();
+            currentSectionIndex--;
+            displayCurrentSection();
+        };
+// Debug function to test answer comparison
+
+// Call this in browser console: debugAnswerComparison()
+      
+    
+    // Update section status
+   function saveCurrentSectionAnswers() {
+    const section = currentLesson.sections[currentSectionIndex];
+    userAnswers[currentSectionIndex] = userAnswers[currentSectionIndex] || {};
+    
+    section.questions.forEach((question, qIndex) => {
+        console.log(`\n💾 Saving Q${qIndex + 1} (${question.type})`);
+        
+        switch (question.type) {
+            case 'multiple-choice':
+            case 'sentence-correction':  // Both use radio buttons
+                const selectedOption = document.querySelector(`input[name="question-${currentSectionIndex}-${qIndex}"]:checked`);
+                if (selectedOption) {
+                    userAnswers[currentSectionIndex][qIndex] = selectedOption.value;
+                    console.log(`  ✅ Saved: "${selectedOption.value}"`);
+                } else {
+                    userAnswers[currentSectionIndex][qIndex] = null;
+                    console.log(`  ⚠️ No answer selected`);
+                }
+                break;
+                
+            case 'fill-blank':
+                const fillInput = document.getElementById(`fill-${currentSectionIndex}-${qIndex}`);
+                if (fillInput) {
+                    const value = fillInput.value.trim();
+                    userAnswers[currentSectionIndex][qIndex] = value || null;
+                    console.log(`  ✅ Saved fill-blank: "${value}"`);
+                } else {
+                    console.error(`  ❌ Fill-blank input not found: fill-${currentSectionIndex}-${qIndex}`);
+                    userAnswers[currentSectionIndex][qIndex] = null;
+                }
+                break;
+                
+            case 'matching':
+                const matches = [];
+                question.pairs.forEach((pair, pIndex) => {
+                    const matchInput = document.getElementById(`match-${currentSectionIndex}-${qIndex}-${pIndex}`);
+                    if (matchInput && matchInput.value.trim() !== '') {
+                        matches.push(matchInput.value.trim());
+                    }
+                });
+                userAnswers[currentSectionIndex][qIndex] = matches.length > 0 ? matches : null;
+                console.log(`  ✅ Saved matching: ${JSON.stringify(matches)}`);
+                break;
+                
+            case 'comprehension':
+                const compAnswers = [];
+                question.questions.forEach((subQ, subIndex) => {
+                    const selectedOption = document.querySelector(`input[name="comp-${currentSectionIndex}-${qIndex}-${subIndex}"]:checked`);
+                    compAnswers.push(selectedOption ? selectedOption.value : null);
+                });
+                userAnswers[currentSectionIndex][qIndex] = compAnswers;
+                console.log(`  ✅ Saved comprehension: ${JSON.stringify(compAnswers)}`);
+                break;
+                
+            default:
+                const textInput = document.getElementById(`text-${currentSectionIndex}-${qIndex}`);
+                if (textInput) {
+                    userAnswers[currentSectionIndex][qIndex] = textInput.value.trim() || null;
+                    console.log(`  ✅ Saved text: "${textInput.value}"`);
+                }
+        }
+    });
+    
+    // Update section status
+    const answeredCount = Object.keys(userAnswers[currentSectionIndex]).filter(key => {
+        const answer = userAnswers[currentSectionIndex][key];
+        return answer !== null && answer !== '' && 
+               (!Array.isArray(answer) || answer.length > 0);
+    }).length;
+    
+    const totalQuestions = section.questions.length;
+    const statusElement = document.getElementById(`sectionStatus-${currentSectionIndex}`);
+    if (statusElement) {
+        statusElement.textContent = `${answeredCount}/${totalQuestions} answered`;
+        statusElement.style.color = answeredCount === totalQuestions ? '#4CAF50' : '#FF9800';
+    }
+    
+    console.log(`📊 Section ${currentSectionIndex + 1}: ${answeredCount}/${totalQuestions} answered`);
+}
+  
+
+function debugInputFields() {
+    console.log('\n🔍 DEBUG: Checking all input fields');
+    
+    const section = currentLesson.sections[currentSectionIndex];
+    section.questions.forEach((question, qIndex) => {
+        console.log(`\nQ${qIndex + 1} (${question.type}):`);
+        
+        switch (question.type) {
+            case 'fill-blank':
+                const fillInput = document.getElementById(`fill-${currentSectionIndex}-${qIndex}`);
+                console.log(`  Fill-blank input found: ${!!fillInput}`);
+                if (fillInput) {
+                    console.log(`  Current value: "${fillInput.value}"`);
+                }
+                break;
+                
+            case 'multiple-choice':
+            case 'sentence-correction':
+                const radios = document.querySelectorAll(`input[name="question-${currentSectionIndex}-${qIndex}"]`);
+                console.log(`  Radio buttons found: ${radios.length}`);
+                const checked = document.querySelector(`input[name="question-${currentSectionIndex}-${qIndex}"]:checked`);
+                console.log(`  Checked: ${checked ? checked.value : 'none'}`);
+                break;
+                
+            case 'matching':
+                question.pairs.forEach((pair, pIndex) => {
+                    const matchInput = document.getElementById(`match-${currentSectionIndex}-${qIndex}-${pIndex}`);
+                    console.log(`  Match ${pIndex + 1} found: ${!!matchInput}, value: "${matchInput?.value || ''}"`);
+                });
+                break;
+        }
+    });
+}
+
+// Call this in console before submitting: debugInputFields()
+window.debugInputFields = debugInputFields;
+// ===== HELPER FUNCTIONS (Place these BEFORE submitAssessment) =====
+
+function normalizeString(s) {
+    return (s === null || s === undefined) 
+        ? '' 
+        : String(s).trim().toLowerCase().normalize('NFD');
+}
+
+function mapToOptionText(val, question) {
+    if (!question || !question.options || question.options.length === 0) {
+        return normalizeString(val);
+    }
+    
+    const v = String(val || '').trim();
+    
+    // Handle single letter (A, B, C, D)
+    if (/^[A-Za-z]$/.test(v)) {
+        const idx = v.toUpperCase().charCodeAt(0) - 65;
+        if (idx >= 0 && idx < question.options.length) {
+            return normalizeString(question.options[idx]);
+        }
+    }
+    
+    // Handle 1-based index (1, 2, 3, 4)
+    if (/^\d+$/.test(v)) {
+        const idx = parseInt(v, 10) - 1;
+        if (idx >= 0 && idx < question.options.length) {
+            return normalizeString(question.options[idx]);
+        }
+    }
+    
+    // Fallback: try to match exact option text
+    return normalizeString(v);
+}
+
+function compareAnswers(userAnswer, correctAnswer, question) {
+    // No answer provided
+    if (userAnswer === undefined || userAnswer === null || userAnswer === '') {
+        return false;
+    }
+
+    // Both are arrays: element-wise comparison
+    if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+        if (userAnswer.length !== correctAnswer.length) return false;
+        
+        for (let i = 0; i < userAnswer.length; i++) {
+            if (normalizeString(userAnswer[i]) !== normalizeString(correctAnswer[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Correct answer is array, user gave single value
+    if (!Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+        const ua = normalizeString(userAnswer);
+        return correctAnswer.some(c => 
+            normalizeString(c) === ua || 
+            mapToOptionText(c, question) === ua
+        );
+    }
+
+    // Multiple-choice: map letters/numbers to option text
+    if (question && question.type === 'multiple-choice') {
+        const uaText = mapToOptionText(userAnswer, question);
+        const caText = Array.isArray(correctAnswer) 
+            ? mapToOptionText(correctAnswer[0], question) 
+            : mapToOptionText(correctAnswer, question);
+        
+        // Also allow direct text match
+        const directMatch = uaText === normalizeString(correctAnswer);
+        const arrayMatch = Array.isArray(correctAnswer) && 
+            correctAnswer.map(c => mapToOptionText(c, question)).includes(uaText);
+        
+        return uaText === caText || directMatch || arrayMatch;
+    }
+
+    // Default: normalized string comparison
+    return normalizeString(userAnswer) === normalizeString(correctAnswer);
+}
+
+
+// ===== FIXED submitAssessment FUNCTION =====
+
+window.submitAssessment = async function() {
+    // Confirm submission
+    if (!confirm('Are you sure you want to submit your assessment? You cannot change answers after submission.')) {
+        return;
+    }
+
+    saveCurrentSectionAnswers();
+    
+    try {
+        console.log('📊 Calculating assessment results...');
+        console.log('User answers:', userAnswers);
+        
+        // Calculate score with detailed breakdown
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let sectionResults = [];
+        
+        currentLesson.sections.forEach((section, sIndex) => {
+            let sectionCorrect = 0;
+            let sectionTotal = section.questions.length;
+            
+            section.questions.forEach((question, qIndex) => {
+                totalQuestions++;
+                const userAnswer = userAnswers[sIndex]?.[qIndex];
+                const correctAnswer = question.answer;
+                
+                console.log(`\n📝 Section ${sIndex + 1}, Q${qIndex + 1}:`);
+                console.log(`   Type: ${question.type}`);
+                console.log(`   User: ${JSON.stringify(userAnswer)}`);
+                console.log(`   Correct: ${JSON.stringify(correctAnswer)}`);
+                
+                // ===== USE THE compareAnswers HELPER HERE =====
+                if (userAnswer !== undefined && userAnswer !== null && userAnswer !== '') {
+                    const isCorrect = compareAnswers(userAnswer, correctAnswer, question);
+                    
+                    if (isCorrect) {
+                        correctAnswers++;
+                        sectionCorrect++;
+                        console.log(`   ✅ CORRECT`);
+                    } else {
+                        console.log(`   ❌ INCORRECT`);
+                        console.log(`   Normalized User: "${normalizeString(userAnswer)}"`);
+                        console.log(`   Normalized Correct: "${normalizeString(correctAnswer)}"`);
+                    }
+                } else {
+                    console.log(`   ❌ NOT ANSWERED`);
+                }
+            });
+            
+            sectionResults.push({
+                name: section.name,
+                correct: sectionCorrect,
+                total: sectionTotal,
+                percentage: Math.round((sectionCorrect / sectionTotal) * 100)
+            });
+        });
+        
+        const score = Math.round((correctAnswers / totalQuestions) * 100);
+        const timeSpent = Math.round((Date.now() - assessmentStartTime) / 1000 / 60);
+        const passed = score >= (currentLesson.scoring?.passingScore || 70);
+        
+        console.log('\n✅ Final Results:', {
+            score,
+            correctAnswers,
+            totalQuestions,
+            timeSpent,
+            passed,
+            sectionResults
+        });
+        
+        // Build detailed results HTML
+        let sectionBreakdownHTML = '<div style="margin: 20px 0; text-align: left;">';
+        sectionBreakdownHTML += '<h4 style="margin-bottom: 15px; text-align: center;">📋 Section Breakdown</h4>';
+        
+        sectionResults.forEach(section => {
+            const barColor = section.percentage >= 70 ? '#4CAF50' : section.percentage >= 50 ? '#FF9800' : '#f44336';
+            sectionBreakdownHTML += `
+                <div style="margin: 10px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-weight: 500;">${section.name}</span>
+                        <span style="color: ${barColor}; font-weight: bold;">${section.correct}/${section.total} (${section.percentage}%)</span>
+                    </div>
+                    <div style="width: 100%; background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden;">
+                        <div style="width: ${section.percentage}%; background: ${barColor}; height: 100%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        sectionBreakdownHTML += '</div>';
+        
+        // Update modal content
+        document.getElementById('assessmentScore').textContent = `${score}%`;
+        document.getElementById('assessmentScore').style.color = passed ? '#4CAF50' : '#f44336';
+        document.getElementById('assessmentTime').textContent = `${timeSpent} min`;
+        document.getElementById('assessmentLevel').textContent = currentLesson.title;
+        
+        // Update results message
+        const resultsMessageEl = document.getElementById('resultsMessage');
+        if (passed) {
+            resultsMessageEl.innerHTML = `
+                <div style="color: #4CAF50; font-size: 48px; margin-bottom: 10px;">🎉</div>
+                <strong style="font-size: 24px; color: #4CAF50;">Assessment Passed!</strong>
+                <div style="margin: 10px 0; font-size: 18px;">You scored ${correctAnswers} out of ${totalQuestions} questions correctly</div>
+                <div style="font-size: 20px; font-weight: bold; color: #4CAF50;">${score}%</div>
+            `;
+            document.getElementById('certificateSection').style.display = 'block';
+            
+            // Save progress if passed
+            try {
+                const result = await learningEngine.updateLessonCompletion(
+                    userProfile.userId, 
+                    currentModule, 
+                    currentLesson.id, 
+                    score, 
+                    timeSpent * 60
+                );
+                
+                if (result.success) {
+                    console.log('✅ Assessment progress saved');
+                } else {
+                    console.warn('⚠️ Failed to save progress:', result.error);
+                }
+            } catch (saveError) {
+                console.error('❌ Error saving progress:', saveError);
+            }
+        } else {
+            const passingScore = currentLesson.scoring?.passingScore || 70;
+            resultsMessageEl.innerHTML = `
+                <div style="color: #FF9800; font-size: 48px; margin-bottom: 10px;">📝</div>
+                <strong style="font-size: 24px; color: #FF9800;">Keep Practicing!</strong>
+                <div style="margin: 10px 0; font-size: 18px;">You scored ${correctAnswers} out of ${totalQuestions} questions correctly</div>
+                <div style="font-size: 20px; font-weight: bold; color: #f44336;">${score}%</div>
+                <div style="margin-top: 10px; color: #666;">Required to pass: ${passingScore}%</div>
+            `;
+            document.getElementById('certificateSection').style.display = 'none';
+        }
+        
+        // Insert section breakdown
+        const modalBody = document.querySelector('#resultsModal .modal-body');
+        const existingBreakdown = modalBody.querySelector('.section-breakdown');
+        if (existingBreakdown) {
+            existingBreakdown.remove();
+        }
+        
+        const breakdownDiv = document.createElement('div');
+        breakdownDiv.className = 'section-breakdown';
+        breakdownDiv.innerHTML = sectionBreakdownHTML;
+        modalBody.appendChild(breakdownDiv);
+        
+        // Show modal with animation
+        const modal = document.getElementById('resultsModal');
+        modal.style.display = 'flex';
+        modal.style.opacity = '0';
+        
+        // Force reflow
+        modal.offsetHeight;
+        
+        setTimeout(() => {
+            modal.style.transition = 'opacity 0.3s ease';
+            modal.style.opacity = '1';
+        }, 10);
+        
+        console.log('✅ Results modal displayed');
+        
+    } catch (error) {
+        console.error('❌ Error submitting assessment:', error);
+        alert(`Error submitting assessment: ${error.message}\n\nPlease try again or contact support.`);
+    }
+}
+
+
+// ===== DEBUGGING HELPER =====
+// Open browser console and run: debugAnswerComparison()
+function debugAnswerComparison() {
+    console.log('🔍 DEBUG: Answer Comparison Test');
+    
+    currentLesson.sections.forEach((section, sIndex) => {
+        console.log(`\n📚 Section ${sIndex + 1}: ${section.name}`);
+        section.questions.forEach((question, qIndex) => {
+            const userAnswer = userAnswers[sIndex]?.[qIndex];
+            const correctAnswer = question.answer;
+            
+            console.log(`\n  Q${qIndex + 1} (${question.type}):`);
+            console.log(`    User: "${userAnswer}" (type: ${typeof userAnswer})`);
+            console.log(`    Correct: "${correctAnswer}" (type: ${typeof correctAnswer})`);
+            
+            if (userAnswer && correctAnswer) {
+                const result = compareAnswers(userAnswer, correctAnswer, question);
+                console.log(`    Match: ${result ? '✅ CORRECT' : '❌ WRONG'}`);
+                console.log(`    Normalized User: "${normalizeString(userAnswer)}"`);
+                console.log(`    Normalized Correct: "${normalizeString(correctAnswer)}"`);
+            } else {
+                console.log(`    Status: ${userAnswer ? 'User answered' : 'No answer'} vs ${correctAnswer ? 'Has correct answer' : 'No correct answer'}`);
+            }
+        });
+    });
+    
+    console.log('\n✅ Debug complete!');
+}
+
+// Make it available globally
+window.debugAnswerComparison = debugAnswerComparison;
+
+window.closeResults = function() {
+    document.getElementById('resultsModal').style.display = 'none';
+    window.location.href = 'home-ai.html';
+};
+
+
+
+        function updateNavigationButtons(current, total) {
+            // Assessment uses different navigation
+        }
+
+        window.goHome = () => window.location.href = 'home-ai.html';
+
+        function getLanguageName(code) {
+            const names = {'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'fr': 'French', 'de': 'German'};
+            return names[code] || code;
+        }
+
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+
+        console.log('✅ Assessment module page script loaded');
+    </script>
+
+    <!-- Translation Widget -->
+    <div class="translation-widget">
+        <button class="translate-btn" id="translateBtn" title="Translate page">
+            <span class="tooltip" id="tooltip">Translate to native language</span>
+            <span id="btnIcon">🌐</span>
+            <span class="language-label" id="langLabel">EN</span>
+        </button>
+    </div>
+
+    <script src="../components/translation-widget.js"></script>
+
+     <script>
+        
+window.completeModule = function(moduleName) {
+    // Check if tracker exists
+    if (typeof tracker === 'undefined') {
+        console.error('Progress tracker not initialized');
+        alert('❌ Error: Progress tracker not loaded. Please refresh the page.');
+        return;
+    }
+    
+    // Check if already completed
+    if (tracker.isModuleComplete(moduleName)) {
+        alert('✅ This module is already completed!');
+        return;
+    }
+    
+    // Confirm completion
+    const moduleNames = {
+        'alphabets': 'AI Alphabets',
+        'vocabulary': 'Smart Vocabulary',
+        'grammar': 'Intelligent Grammar',
+        'assessment': 'Adaptive Assessment'
+    };
+    
+    const moduleFriendlyName = moduleNames[moduleName] || moduleName;
+    
+    if (confirm(`🎉 Complete ${moduleFriendlyName}?\n\nThis will mark the module as completed and update your progress.`)) {
+        // Mark as complete
+        tracker.markComplete(moduleName);
+        
+        // Update button appearance
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+        
+        // Show success message
+        setTimeout(() => {
+            const completed = Object.values(tracker.modules).filter(m => m.completed).length;
+            const total = Object.keys(tracker.modules).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            if (completed === total) {
+                alert(`🎓 CONGRATULATIONS! 🎓\n\nYou've completed ALL modules!\n\nYour learning journey is 100% complete! 🌟`);
+            } else {
+                alert(`✅ ${moduleFriendlyName} Completed!\n\nOverall Progress: ${percentage}%\n${completed} of ${total} modules completed\n\nKeep going! 💪`);
+            }
+        }, 500);
+    }
+};
+
+// Check module completion status on page load
+window.checkModuleCompletion = function(moduleName) {
+    if (typeof tracker !== 'undefined' && tracker.isModuleComplete(moduleName)) {
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+    }
+};
+
+// Auto-check on page load (call this after tracker is initialized)
+document.addEventListener('DOMContentLoaded', function() {
+    // Get module name from URL or script context
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentModule = urlParams.get('module') || 
+                         (window.location.pathname.includes('alphabets') ? 'alphabets' : 
+                          window.location.pathname.includes('vocabulary') ? 'vocabulary' : 
+                          window.location.pathname.includes('grammar') ? 'grammar' : 
+                          window.location.pathname.includes('assessment') ? 'assessment' : null);
+    
+    if (currentModule) {
+        setTimeout(() => checkModuleCompletion(currentModule), 500);
+    }
+});
+
+console.log('✅ Complete Module script loaded');
+    </script>
+
+
+
+
+  <script>
+
+    
+window.completeModule = function(moduleName) {
+    // Check if tracker exists
+    if (typeof tracker === 'undefined') {
+        console.error('Progress tracker not initialized');
+        alert('❌ Error: Progress tracker not loaded. Please refresh the page.');
+        return;
+    }
+    
+    // Check if already completed
+    if (tracker.isModuleComplete(moduleName)) {
+        alert('✅ This module is already completed!');
+        return;
+    }
+    
+    // Confirm completion
+    const moduleNames = {
+        'alphabets': 'AI Alphabets',
+        'vocabulary': 'Smart Vocabulary',
+        'grammar': 'Intelligent Grammar',
+        'assessment': 'Adaptive Assessment'
+    };
+    
+    const moduleFriendlyName = moduleNames[moduleName] || moduleName;
+    
+    if (confirm(`🎉 Complete ${moduleFriendlyName}?\n\nThis will mark the module as completed and update your progress.`)) {
+        // Mark as complete
+        tracker.markComplete(moduleName);
+        
+        // Update button appearance
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+        
+        // Show success message
+        setTimeout(() => {
+            const completed = Object.values(tracker.modules).filter(m => m.completed).length;
+            const total = Object.keys(tracker.modules).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            if (completed === total) {
+                alert(`🎓 CONGRATULATIONS! 🎓\n\nYou've completed ALL modules!\n\nYour learning journey is 100% complete! 🌟`);
+            } else {
+                alert(`✅ ${moduleFriendlyName} Completed!\n\nOverall Progress: ${percentage}%\n${completed} of ${total} modules completed\n\nKeep going! 💪`);
+            }
+        }, 500);
+    }
+};
+
+// Check module completion status on page load
+window.checkModuleCompletion = function(moduleName) {
+    if (typeof tracker !== 'undefined' && tracker.isModuleComplete(moduleName)) {
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+    }
+};
+
+// Auto-check on page load (call this after tracker is initialized)
+document.addEventListener('DOMContentLoaded', function() {
+    // Get module name from URL or script context
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentModule = urlParams.get('module') || 
+                         (window.location.pathname.includes('alphabets') ? 'alphabets' : 
+                          window.location.pathname.includes('vocabulary') ? 'vocabulary' : 
+                          window.location.pathname.includes('grammar') ? 'grammar' : 
+                          window.location.pathname.includes('assessment') ? 'assessment' : null);
+    
+    if (currentModule) {
+        setTimeout(() => checkModuleCompletion(currentModule), 500);
+    }
+});
+
+console.log('✅ Complete Module script loaded');
+    </script>
+
+<script src="../js/progress-tracker.js"></script>
+
+</body>
+</html>

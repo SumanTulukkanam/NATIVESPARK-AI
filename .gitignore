@@ -1,0 +1,8 @@
+.env
+.env.local
+*.key
+*.token
+node_modules/
+__pycache__/
+models/
+venv/

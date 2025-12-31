@@ -1,0 +1,776 @@
+/* grammar.css — Grammar Module Styles (extends style.css) */
+
+/* ========== Layout Sections ========== */
+.progress-section {
+    margin: 20px 0;
+}
+
+.progress-bar-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    backdrop-filter: blur(15px);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+/* ========== Lesson Header ========== */
+.lesson-header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    text-align: center;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 0 25px rgba(46, 204, 113, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.lesson-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    z-index: 0;
+}
+
+.lesson-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    background: var(--gradient-ai);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.welcome-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Info cards under lesson title */
+.learning-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ========== Lesson Content Sections ========== */
+.modules-section {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: var(--gradient-ai);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========== Grammar Concepts Cards ========== */
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.module-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(25px);
+    position: relative;
+    overflow: hidden;
+}
+
+.module-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.03), rgba(118, 75, 162, 0.03));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.module-card:hover::before {
+    opacity: 1;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    border-color: #667eea;
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.4);
+}
+
+.module-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.module-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.module-title {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.module-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+/* Concept Examples & Rules */
+.concept-examples,
+.concept-rules {
+    margin-top: 15px;
+    text-align: left;
+}
+
+.concept-examples strong,
+.concept-rules strong {
+    color: var(--primary-green);
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.concept-examples ul,
+.concept-rules ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    list-style: none;
+}
+
+.concept-examples ul li,
+.concept-rules ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.concept-examples ul li::before {
+    content: '💡';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.concept-rules ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--primary-green);
+}
+
+/* ========== Examples & Practice Cards ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    transform: translateY(-3px);
+}
+
+.stat-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.stat-description {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* ========== Exercises Section ========== */
+#exercisesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+#exercisesContainer .stat-card {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    padding: 25px;
+    margin-bottom: 20px;
+    cursor: default;
+}
+
+#exercisesContainer .stat-card:hover {
+    transform: none;
+    border-color: rgba(102, 126, 234, 0.4);
+}
+
+#exercisesContainer .stat-info {
+    width: 100%;
+}
+
+#exercisesContainer .stat-label {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.exercise-options {
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-label {
+    display: block;
+    padding: 12px 15px;
+    margin: 5px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.option-label:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateX(5px);
+}
+
+.option-label input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #667eea;
+}
+
+.option-label input[type="radio"]:checked {
+    accent-color: #4CAF50;
+}
+
+#exercisesContainer input[type="text"],
+#exercisesContainer input[type="number"],
+#exercisesContainer textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+#exercisesContainer input:focus,
+#exercisesContainer textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.check-btn {
+    background: var(--gradient-ai);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.check-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.check-btn:active {
+    transform: translateY(0);
+}
+
+.check-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Feedback styling */
+[id^="feedback-"] {
+    margin-top: 15px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[id^="feedback-"][style*="color: rgb(76, 175, 80)"] {
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+[id^="feedback-"][style*="color: rgb(244, 67, 54)"] {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* ========== Navigation Buttons ========== */
+.quick-actions {
+    margin: 40px 0;
+}
+
+.actions-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    background: var(--gradient-ai);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 15px 30px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.action-btn:active {
+    transform: translateY(-1px);
+}
+
+.action-btn.secondary {
+    background: var(--gradient-info);
+}
+
+.action-btn.secondary:hover {
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+}
+
+.action-icon {
+    font-size: 1.2rem;
+}
+
+.action-text {
+    font-weight: 700;
+}
+
+/* ========== Modals ========== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(10px);
+}
+
+.modal {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 25px;
+    padding: 35px;
+    max-width: 550px;
+    width: 90%;
+    text-align: center;
+    animation: fadeInUp 0.5s ease;
+    box-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+}
+
+.modal-header {
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 2rem;
+    background: var(--gradient-success);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.modal-body {
+    margin: 20px 0;
+}
+
+.settings-section {
+    text-align: center;
+}
+
+.section-heading {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    margin-top: 25px;
+}
+
+.modal-actions .btn {
+    min-width: 200px;
+    font-size: 1.1rem;
+    padding: 15px 30px;
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ========== Loading Overlay ========== */
+#loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(20px);
+}
+
+#loadingOverlay > div {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========== TTS Status Banner ========== */
+#ttsStatus {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.3s ease;
+}
+
+#ttsStatus strong {
+    font-weight: 700;
+}
+
+/* ========== Continue Button Styling ========== */
+.continue-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+.continue-btn:active {
+    transform: translateY(0);
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+    .learning-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+
+    .modal {
+        padding: 25px;
+        width: 95%;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    .module-icon {
+        font-size: 2.5rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .continue-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .lesson-header {
+        padding: 20px;
+    }
+
+    .info-item {
+        padding: 10px 15px;
+    }
+
+    .module-card {
+        padding: 20px;
+    }
+
+    .stat-card {
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .modal {
+        padding: 20px;
+    }
+}
+
+/* ========== Animations ========== */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    }
+}
+
+/* ========== Accessibility ========== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== Print Styles ========== */
+@media print {
+    .header,
+    .quick-actions,
+    .translation-widget,
+    #ttsStatus {
+        display: none !important;
+    }
+
+    .main-container {
+        max-width: 100%;
+    }
+
+    .module-card,
+    .stat-card {
+        break-inside: avoid;
+    }
+}

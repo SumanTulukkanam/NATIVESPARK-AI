@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Learning - NativeSpark</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grammar.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="../assets/favicon-32x32.png" alt="NativeSpark Logo" class="logo-icon">
+            NativeSpark AI
+        </div>
+        <div class="header-actions">
+            <button id="initBtn" class="continue-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                🔊 Enable TTS
+            </button>
+            <button class="continue-btn" onclick="goHome()" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+                🏠 Home
+            </button>
+        </div>
+        <div class="user-header">
+            <div class="user-profile">
+                <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+                <span id="userName">Learner</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- TTS Status -->
+    <div id="ttsStatus" style="background: transparent; padding: 10px; text-align: center; font-size: 14px; color: #666;">
+        TTS System: Click "Enable TTS" button to activate audio
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Lesson Content Section -->
+        <section class="welcome-section" style="margin-bottom: 20px;">
+            <div class="lesson-header">
+                <h2 id="lessonTitle" class="welcome-title">Loading Grammar Lesson...</h2>
+                <p id="lessonDescription" class="welcome-subtitle">Please wait...</p>
+                <div class="learning-info">
+                    <div class="info-item">
+                        <div class="info-label">Lesson</div>
+                        <div class="info-value" id="lessonNumber">1 / 3</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Learning</div>
+                        <div class="info-value" id="targetLanguage">English</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grammar Concepts Section -->
+        <section class="modules-section" id="conceptsSection">
+            <h2 class="section-title">📚 Grammar Concepts</h2>
+            <div id="conceptsContainer" class="modules-grid"></div>
+        </section>
+
+        <!-- Examples Section -->
+        <section class="modules-section" id="examplesSection" style="display: none;">
+            <h2 class="section-title">💡 Examples</h2>
+            <div id="examplesContainer" class="stats-grid"></div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section class="modules-section" id="exercisesSection">
+            <h2 class="section-title">✍️ Practice Exercises</h2>
+            <div id="exercisesContainer" style="background-color: transparent;color:black;"></div>
+        </section>
+
+        <!-- Practice Sentences Section -->
+        <section class="modules-section" id="practiceSection" style="display: none;">
+            <h2 class="section-title">🎯 Practice Sentences</h2>
+            <div id="practiceContainer" class="stats-grid"></div>
+        </section>
+
+        <!-- Tips Section -->
+        <section class="modules-section" id="tipsSection" style="display: none;">
+            <h2 class="section-title">💡 Learning Tips</h2>
+            <div id="tipsContainer" class="stats-grid"></div>
+        </section>
+
+        <!-- Navigation Buttons -->
+        <section class="quick-actions">
+            <div class="actions-grid">
+                <button class="action-btn secondary" id="prevBtn" onclick="previousLesson()" style="display: none;">
+                    <span class="action-icon">◀</span>
+                    <span class="action-text">Previous</span>
+                </button>
+               <button class="action-btn" id="completeModuleBtn" onclick="completeModule('grammar')" 
+                style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">
+            <span class="action-icon">✅</span>
+            <span class="action-text">Complete Grammar</span>
+        </button>
+                <button class="action-btn" id="nextBtn" onclick="nextLesson()" style="display: none;">
+                    <span class="action-icon">▶</span>
+                    <span class="action-text">Next Lesson</span>
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🎉 Congratulations!</h3>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section" style="text-align: center;">
+                    <h4 id="completionMessage" class="section-heading">Grammar Lesson Completed!</h4>
+                    <div class="stats-grid" style="margin-top: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Score</div>
+                                <div class="stat-value" id="lessonScore">100%</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Time</div>
+                                <div class="stat-value" id="lessonTime">5 min</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="continueToNext()">
+                    Continue ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="modal-overlay" style="display: flex;">
+        <div style="text-align: center; color: white;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+            <h2>Loading Grammar Lesson...</h2>
+        </div>
+    </div>
+
+    <!-- SINGLE SCRIPT TAG - NO DUPLICATES -->
+    <script type="module">
+        import learningEngine from '../js/learning-engine.js';
+        import { auth, db, doc, getDoc } from '../config/firebase-config.js';
+
+        // Global variables
+        let currentUser = null;
+        let userProfile = null;
+        let currentModule = 'grammar';
+        let currentLessonIndex = 0;
+        let currentLesson = null;
+        let lessonStartTime = null;
+        let exerciseAnswers = {};
+
+        // Get module from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentModule = urlParams.get('module') || 'grammar';
+
+        // Initialize page
+       async function initializePage() {
+    try {
+        console.log('🚀 Starting page initialization...');
+        
+        // Show loading overlay
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        // Step 1: Load user profile
+        console.log('👤 Loading user profile...');
+        await loadUserProfile();
+        console.log('✅ User profile loaded');
+
+        // Step 2: Setup TTS (non-blocking)
+        console.log('🔊 Setting up TTS...');
+        setupTTSControls();
+        console.log('✅ TTS setup complete');
+
+        // Step 3: Load lesson
+        console.log('📖 Loading lesson...');
+        await loadLesson();
+        console.log('✅ Lesson loaded');
+
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+
+        console.log('✅ Page initialization complete');
+
+    } catch (error) {
+        console.error('❌ Initialization error:', error);
+        
+        // Hide loading and show error
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.innerHTML = `
+                <div style="text-align: center; color: white;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <h2>Error Loading Lesson</h2>
+                    <p style="margin: 20px; max-width: 500px;">${error.message}</p>
+                    <button onclick="window.location.reload()" 
+                            style="background: #4CAF50; color: white; border: none; 
+                                   padding: 15px 30px; border-radius: 8px; cursor: pointer; 
+                                   font-size: 16px; margin: 10px;">
+                        🔄 Retry
+                    </button>
+                    <button onclick="window.location.href='home-ai.html'" 
+                            style="background: #2196F3; color: white; border: none; 
+                                   padding: 15px 30px; border-radius: 8px; cursor: pointer; 
+                                   font-size: 16px; margin: 10px;">
+                        🏠 Go Home
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Alert user
+        alert(`Failed to load lesson: ${error.message}\n\nPlease try again or return to home.`);
+    }
+}
+        function setupTTSControls() {
+            const initBtn = document.getElementById('initBtn');
+            const statusDiv = document.getElementById('ttsStatus');
+
+            initBtn.addEventListener('click', async () => {
+                try {
+                    initBtn.disabled = true;
+                    initBtn.textContent = '🔄 Initializing...';
+                    
+                    const success = learningEngine.initializeTTS();
+                    
+                    if (success) {
+                        statusDiv.innerHTML = '✅ <strong>TTS System Ready!</strong> Click examples to hear pronunciation';
+                        statusDiv.style.color = '#4CAF50';
+                        initBtn.textContent = '✅ TTS Enabled';
+                        initBtn.style.background = '#45a049';
+                    }
+                } catch (error) {
+                    statusDiv.innerHTML = '❌ <strong>TTS Failed:</strong> ' + error.message;
+                    statusDiv.style.color = '#f44336';
+                    initBtn.disabled = false;
+                }
+            });
+        }
+
+       async function loadUserProfile() {
+    try {
+        console.log('👤 Loading user profile...');
+
+        // Try session storage first
+        const storedProfile = sessionStorage.getItem('userProfile');
+        if (storedProfile) {
+            try {
+                userProfile = JSON.parse(storedProfile);
+                console.log('✅ Profile loaded from session:', userProfile.displayName);
+                updateProfileUI();
+                return;
+            } catch (e) {
+                console.warn('Failed to parse session profile:', e);
+            }
+        }
+
+        // Try localStorage
+        const localProfile = localStorage.getItem('userProfile');
+        if (localProfile) {
+            try {
+                userProfile = JSON.parse(localProfile);
+                console.log('✅ Profile loaded from local storage:', userProfile.displayName);
+                sessionStorage.setItem('userProfile', localProfile);
+                updateProfileUI();
+                return;
+            } catch (e) {
+                console.warn('Failed to parse local profile:', e);
+            }
+        }
+
+        // Try Firebase if authenticated
+        if (auth.currentUser) {
+            console.log('Fetching profile from Firebase...');
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            
+            if (userDoc.exists()) {
+                userProfile = userDoc.data();
+                console.log('✅ Profile loaded from Firebase:', userProfile.displayName);
+                
+                // Cache it
+                sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                
+                updateProfileUI();
+                return;
+            }
+        }
+
+        // No profile found anywhere
+        throw new Error('User profile not found. Please complete setup from home page.');
+
+    } catch (error) {
+        console.error('❌ Error loading profile:', error);
+        throw error;
+    }
+}
+
+function updateProfileUI() {
+    if (!userProfile) return;
+    
+    const userNameEl = document.getElementById('userName');
+    const userAvatarEl = document.getElementById('userAvatar');
+    
+    if (userNameEl) {
+        userNameEl.textContent = userProfile.displayName || 'Learner';
+    }
+    
+    if (userAvatarEl && userProfile.photoURL) {
+        userAvatarEl.src = userProfile.photoURL;
+        userAvatarEl.onerror = () => {
+            userAvatarEl.src = 'https://via.placeholder.com/35';
+        };
+    }
+}
+
+// FIXED: Make sure initialization runs properly
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📄 DOM loaded, initializing...');
+        initializePage();
+    });
+} else {
+    console.log('📄 DOM already ready, initializing...');
+    initializePage();
+}
+
+// Add timeout fallback
+setTimeout(() => {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay && loadingOverlay.style.display !== 'none') {
+        console.warn('⏰ Loading timeout - forcing initialization');
+        initializePage();
+    }
+}, 5000); // 5 second timeout
+
+       async function loadLesson() {
+    try {
+        console.log('📚 Starting lesson load...');
+        lessonStartTime = Date.now();
+
+        // Validate required data
+        if (!userProfile || !userProfile.targetLanguage) {
+            throw new Error('User profile not loaded. Please refresh the page.');
+        }
+
+        if (!currentModule) {
+            throw new Error('Module not specified. Please select a module from home page.');
+        }
+
+        console.log(`Loading ${currentModule} lesson ${currentLessonIndex} for ${userProfile.targetLanguage}`);
+
+        // Get lesson from learning engine
+        const result = await learningEngine.getLesson(
+            currentModule,
+            userProfile.targetLanguage,
+            currentLessonIndex
+        );
+
+        console.log('Lesson result:', result);
+
+        if (!result.success) {
+            throw new Error(result.error || 'Failed to load lesson');
+        }
+
+        if (!result.lesson) {
+            throw new Error('Lesson data is empty');
+        }
+
+        currentLesson = result.lesson;
+        console.log('✅ Lesson loaded:', currentLesson.title);
+
+        // Update UI
+        document.getElementById('lessonTitle').textContent = currentLesson.title || 'Lesson';
+        document.getElementById('lessonDescription').textContent = currentLesson.content || '';
+        document.getElementById('lessonNumber').textContent = `${result.currentLesson} / ${result.totalLessons}`;
+        document.getElementById('targetLanguage').textContent = getLanguageName(userProfile.targetLanguage);
+
+        // Display lesson content
+        console.log('🎨 Displaying lesson content...');
+        displayConcepts();
+displayExamples();
+displayExercises();
+displayPracticeSentences();
+displayTips();
+
+        updateNavigationButtons(result.currentLesson, result.totalLessons);
+
+        console.log('✅ Lesson display complete');
+
+    } catch (error) {
+        console.error('❌ Error in loadLesson:', error);
+        throw error; // Re-throw to be caught by initializePage
+    }
+}
+        function displayConcepts() {
+            const container = document.getElementById('conceptsContainer');
+            container.innerHTML = '';
+            
+            if (!currentLesson.concepts || currentLesson.concepts.length === 0) {
+                document.getElementById('conceptsSection').style.display = 'none';
+                return;
+            }
+
+            currentLesson.concepts.forEach(concept => {
+                const card = document.createElement('div');
+                card.className = 'module-card';
+                card.innerHTML = `
+                    <div class="module-icon" style="font-size: 32px;">📖</div>
+                    <div class="module-title">${concept.name}</div>
+                    <div class="module-description">${concept.explanation}</div>
+                    ${concept.examples ? `
+                        <div class="concept-examples" style="margin-top: 15px;">
+                            <strong>Examples:</strong>
+                            <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                                ${concept.examples.map(ex => `<li>${ex}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${concept.rules ? `
+                        <div class="concept-rules" style="margin-top: 10px;">
+                            <strong>Rules:</strong>
+                            <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                                ${concept.rules.map(rule => `<li>${rule}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function displayExamples() {
+            if (!currentLesson.examples) {
+                document.getElementById('examplesSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('examplesSection').style.display = 'block';
+            const container = document.getElementById('examplesContainer');
+            container.innerHTML = '';
+
+            Object.entries(currentLesson.examples).forEach(([key, example]) => {
+                const exampleText = typeof example === 'object' ? example.word || '' : example;
+                const pronunciation = typeof example === 'object' ? example.pronunciation || '' : '';
+
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.style.cursor = learningEngine.isTTSInitialized() ? 'pointer' : 'default';
+                card.innerHTML = `
+                    <div class="stat-icon" style="font-size: 24px;">💬</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Example</div>
+                        <div class="stat-value" style="font-size: 16px;">${exampleText}</div>
+                        ${pronunciation ? `<div class="stat-description" style="font-size: 12px; color: #666;">${pronunciation}</div>` : ''}
+                    </div>
+                `;
+                if (learningEngine.isTTSInitialized()) {
+                    card.onclick = () => speakExample(example);
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function displayExercises() {
+            const container = document.getElementById('exercisesContainer');
+            container.innerHTML = '';
+
+            if (!currentLesson.exercises || currentLesson.exercises.length === 0) {
+                container.innerHTML = '<p>No grammar exercises for this lesson.</p>';
+                return;
+            }
+
+            currentLesson.exercises.forEach((exercise, index) => {
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.className = 'stat-card';
+                exerciseDiv.style.marginBottom = '20px';
+                exerciseDiv.style.padding = '20px';
+                
+                let optionsHTML = '';
+                if (exercise.options && exercise.options.length > 0) {
+                    optionsHTML = `
+                        <div class="exercise-options" style="margin: 15px 0;">
+                            ${exercise.options.map((option, optIndex) => `
+                                <label class="option-label" style="display: block; padding: 10px; margin: 5px 0; background: #f8f9fa; border-radius: 8px; cursor: pointer;">
+                                    <input type="radio" name="exercise-${index}" value="${option}" style="margin-right: 10px;">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                exerciseDiv.innerHTML = `
+                    <div class="stat-info" style="width: 100%;">
+                        <div class="stat-label" style="margin-bottom: 15px; font-size: 18px;">${exercise.question}</div>
+                        ${optionsHTML}
+                        <button onclick="checkExercise(${index}, this)" class="check-btn" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px;">
+                            Check Answer
+                        </button>
+                        <div id="feedback-${index}" style="margin-top: 15px; font-weight: bold; display: none;"></div>
+                    </div>
+                `;
+                container.appendChild(exerciseDiv);
+            });
+        }
+
+        function displayPracticeSentences() {
+            if (!currentLesson.practiceSentences || currentLesson.practiceSentences.length === 0) {
+                document.getElementById('practiceSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('practiceSection').style.display = 'block';
+            const container = document.getElementById('practiceContainer');
+            container.innerHTML = '';
+
+            currentLesson.practiceSentences.forEach(sentence => {
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.style.cursor = learningEngine.isTTSInitialized() ? 'pointer' : 'default';
+                card.innerHTML = `
+                    <div class="stat-icon" style="font-size: 24px;">📝</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Practice</div>
+                        <div class="stat-value" style="font-size: 16px;">${sentence}</div>
+                    </div>
+                `;
+                if (learningEngine.isTTSInitialized()) {
+                    card.onclick = () => speakSentence(sentence);
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function displayTips() {
+            if (!currentLesson.tips || currentLesson.tips.length === 0) {
+                document.getElementById('tipsSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('tipsSection').style.display = 'block';
+            const container = document.getElementById('tipsContainer');
+            container.innerHTML = '';
+
+            currentLesson.tips.forEach(tip => {
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <div class="stat-icon" style="font-size: 24px;">💡</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Tip</div>
+                        <div class="stat-value" style="font-size: 16px;">${tip}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function speakExample(example) {
+            if (!learningEngine.isTTSInitialized()) {
+                alert('Please enable TTS first');
+                return;
+            }
+
+            const statusDiv = document.getElementById('ttsStatus');
+            const speakText = typeof example === 'object' ? example.speakText || example.word : example;
+            
+            statusDiv.innerHTML = '🔊 <strong>Speaking:</strong> ' + speakText;
+            statusDiv.style.color = '#2196F3';
+
+            learningEngine.speakGenericWord(speakText, { lang: getLanguageCode(userProfile.targetLanguage) })
+                .then(() => {
+                    statusDiv.innerHTML = '✅ <strong>TTS Ready</strong>';
+                    statusDiv.style.color = '#4CAF50';
+                })
+                .catch(error => {
+                    console.error('TTS Error:', error);
+                    statusDiv.innerHTML = '❌ <strong>TTS Error</strong>';
+                    statusDiv.style.color = '#f44336';
+                });
+        }
+
+        function speakSentence(sentence) {
+            if (!learningEngine.isTTSInitialized()) {
+                alert('Please enable TTS first');
+                return;
+            }
+
+            const statusDiv = document.getElementById('ttsStatus');
+            statusDiv.innerHTML = '🔊 <strong>Speaking sentence...</strong>';
+            statusDiv.style.color = '#2196F3';
+
+            learningEngine.speakGenericWord(sentence, { 
+                lang: getLanguageCode(userProfile.targetLanguage),
+                rate: 0.7 
+            })
+                .then(() => {
+                    statusDiv.innerHTML = '✅ <strong>TTS Ready</strong>';
+                    statusDiv.style.color = '#4CAF50';
+                })
+                .catch(error => {
+                    console.error('TTS Error:', error);
+                    statusDiv.innerHTML = '❌ <strong>TTS Error</strong>';
+                    statusDiv.style.color = '#f44336';
+                });
+        }
+
+        window.checkExercise = function(exerciseIndex, button) {
+            const exerciseCard = button.parentElement.parentElement;
+            const selectedOption = exerciseCard.querySelector('input:checked');
+            const feedback = document.getElementById(`feedback-${exerciseIndex}`);
+            
+            if (!selectedOption) {
+                alert('Please select an answer first!');
+                return;
+            }
+
+            const exercise = currentLesson.exercises[exerciseIndex];
+            
+            if (selectedOption.value === exercise.answer) {
+                button.style.background = '#4CAF50';
+                button.textContent = '✓ Correct!';
+                feedback.textContent = exercise.explanation;
+                feedback.style.color = '#4CAF50';
+                exerciseAnswers[exerciseIndex] = true;
+            } else {
+                button.style.background = '#f44336';
+                button.textContent = '✗ Try Again';
+                feedback.textContent = exercise.explanation;
+                feedback.style.color = '#f44336';
+                exerciseAnswers[exerciseIndex] = false;
+            }
+            
+            feedback.style.display = 'block';
+            button.disabled = true;
+        };
+
+        function updateNavigationButtons(current, total) {
+            document.getElementById('prevBtn').style.display = current > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').style.display = current < total ? 'block' : 'none';
+        }
+
+       async function completeLesson() {
+    try {
+        console.log('🎯 Starting lesson completion process...');
+        
+        // Calculate score
+        const totalExercises = Object.keys(exerciseAnswers).length;
+        const correctAnswers = Object.values(exerciseAnswers).filter(a => a === true).length;
+        const score = totalExercises > 0 ? Math.round((correctAnswers / totalExercises) * 100) : 100;
+        const timeSpent = Math.round((Date.now() - lessonStartTime) / 1000 / 60);
+
+        console.log('📊 Lesson stats:', {
+            score: score + '%',
+            timeSpent: timeSpent + ' min',
+            exercises: `${correctAnswers}/${totalExercises}`
+        });
+
+        // Disable button
+        const completeBtn = document.getElementById('completeBtn');
+        const originalBtnContent = completeBtn.innerHTML;
+        completeBtn.disabled = true;
+        completeBtn.innerHTML = '<span class="action-icon">⏳</span><span class="action-text">Saving Progress...</span>';
+
+        // Make sure learningEngine is imported
+        if (!window.learningEngine) {
+            const { default: learningEngine } = await import('../js/learning-engine.js');
+            window.learningEngine = learningEngine;
+        }
+
+        // Update lesson completion in learning engine
+        console.log('💾 Calling updateLessonCompletion...');
+        const result = await window.learningEngine.updateLessonCompletion(
+            userProfile.userId,
+            currentModule,
+            currentLesson.id,
+            score,
+            timeSpent
+        );
+
+        console.log('📥 Completion result:', result);
+
+        if (!result.success) {
+            throw new Error(result.error || 'Failed to save progress');
+        }
+
+        // Update completion modal with detailed results
+        const completionMsg = document.getElementById('completionMessage');
+        
+        if (result.languageLearned) {
+            completionMsg.innerHTML = `
+                🎓 <strong>Congratulations!</strong><br>
+                You've completed ALL modules!<br>
+                <strong>Language Progress: 100%</strong>
+            `;
+        } else if (result.moduleCompleted) {
+            completionMsg.innerHTML = `
+                ✅ <strong>Module Completed!</strong><br>
+                Module Progress: <strong>100%</strong><br>
+                Overall Progress: <strong>${result.overallProgress}%</strong><br>
+                ${result.nextModule ? `Next Module: <strong>${getModuleName(result.nextModule)}</strong>` : ''}
+            `;
+        } else {
+            completionMsg.innerHTML = `
+                🎉 <strong>Lesson Completed!</strong><br>
+                Module Progress: <strong>${result.moduleProgress}%</strong> (${result.completedLessons}/${result.totalLessons} lessons)<br>
+                Overall Progress: <strong>${result.overallProgress}%</strong>
+            `;
+        }
+
+        // Update score and time displays
+        document.getElementById('lessonScore').textContent = `${score}%`;
+        document.getElementById('lessonTime').textContent = `${timeSpent} min`;
+        
+        // Show completion modal
+        document.getElementById('completionModal').style.display = 'flex';
+        
+        // Store result for navigation
+        window.completionResult = result;
+
+        console.log('✅ Lesson completion process finished successfully');
+
+    } catch (error) {
+        console.error('❌ Error completing lesson:', error);
+        alert('❌ Failed to save progress: ' + error.message + '\n\nPlease try again.');
+        
+        // Restore button
+        const completeBtn = document.getElementById('completeBtn');
+        if (completeBtn) {
+            completeBtn.disabled = false;
+            completeBtn.innerHTML = '<span class="action-icon">✅</span><span class="action-text">Complete Lesson</span>';
+        }
+    }
+}
+
+       function continueToNext() {
+    document.getElementById('completionModal').style.display = 'none';
+    const result = window.completionResult;
+    
+    console.log('➡️ Continue to next:', result);
+    
+    if (!result) {
+        console.log('↩️ No result, returning home');
+        window.location.href = 'home-ai.html';
+        return;
+    }
+    
+    if (result.languageLearned) {
+        alert('🎓 Congratulations! You\'ve mastered the language!\n\nReturning to home page...');
+        setTimeout(() => {
+            window.location.href = 'home-ai.html?refresh=true';
+        }, 1000);
+        return;
+    }
+    
+    if (result.moduleCompleted) {
+        const nextModuleName = result.nextModule ? getModuleName(result.nextModule) : null;
+        const message = nextModuleName 
+            ? `✅ Module Complete!\n\nOverall Progress: ${result.overallProgress}%\n\nReady to start ${nextModuleName}?`
+            : `✅ Module Complete!\n\nOverall Progress: ${result.overallProgress}%`;
+        
+        alert(message);
+        
+        setTimeout(() => {
+            window.location.href = 'home-ai.html?refresh=true';
+        }, 1000);
+        return;
+    }
+    
+    // Continue to next lesson in same module
+    const totalLessons = window.learningEngine.getModuleLessons(currentModule, userProfile.targetLanguage).length;
+    
+    if (currentLessonIndex < totalLessons - 1) {
+        console.log('➡️ Moving to next lesson');
+        nextLesson();
+    } else {
+        alert('🎉 All lessons in this module completed!\n\nReturning to home...');
+        setTimeout(() => {
+            window.location.href = 'home-ai.html?refresh=true';
+        }, 1000);
+    }
+}
+
+// Helper function to get module display name
+function getModuleName(moduleKey) {
+    const names = {
+        'alphabets': 'Alphabets',
+        'vocabulary': 'Vocabulary',
+        'grammar': 'Grammar',
+        'assessment': 'Assessment'
+    };
+    return names[moduleKey] || moduleKey;
+}
+        // Global functions
+       window.nextLesson = async function() {
+    currentLessonIndex++;
+    exerciseAnswers = {};
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    await loadLesson(); // <-- await here
+    document.getElementById('loadingOverlay').style.display = 'none'; // hide overlay
+};
+
+window.previousLesson = async function() {
+    if (currentLessonIndex > 0) {
+        currentLessonIndex--;
+        exerciseAnswers = {};
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        await loadLesson(); // <-- await here
+        document.getElementById('loadingOverlay').style.display = 'none'; // hide overlay
+    }
+};
+
+        window.completeLesson = completeLesson;
+        window.continueToNext = continueToNext;
+        window.goHome = () => window.location.href = 'home-ai.html';
+
+        function getLanguageName(code) {
+            const names = {'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'fr': 'French', 'de': 'German'};
+            return names[code] || code;
+        }
+
+        function getLanguageCode(code) {
+            const codes = {'en': 'en-US', 'ta': 'ta-IN', 'hi': 'hi-IN', 'fr': 'fr-FR', 'de': 'de-DE'};
+            return codes[code] || 'en-US';
+        }
+
+     
+
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+
+        console.log('✅ Grammar module page script loaded');
+    </script>
+
+    <!-- Translation Widget -->
+    <div class="translation-widget">
+        <button class="translate-btn" id="translateBtn" title="Translate page">
+            <span class="tooltip" id="tooltip">Translate to native language</span>
+            <span id="btnIcon">🌐</span>
+            <span class="language-label" id="langLabel">EN</span>
+        </button>
+    </div>
+
+    <script src="../components/translation-widget.js"></script>
+
+
+
+      <script>
+
+    
+window.completeModule = function(moduleName) {
+    // Check if tracker exists
+    if (typeof tracker === 'undefined') {
+        console.error('Progress tracker not initialized');
+        alert('❌ Error: Progress tracker not loaded. Please refresh the page.');
+        return;
+    }
+    
+    // Check if already completed
+    if (tracker.isModuleComplete(moduleName)) {
+        alert('✅ This module is already completed!');
+        return;
+    }
+    
+    // Confirm completion
+    const moduleNames = {
+        'alphabets': 'AI Alphabets',
+        'vocabulary': 'Smart Vocabulary',
+        'grammar': 'Intelligent Grammar',
+        'assessment': 'Adaptive Assessment'
+    };
+    
+    const moduleFriendlyName = moduleNames[moduleName] || moduleName;
+    
+    if (confirm(`🎉 Complete ${moduleFriendlyName}?\n\nThis will mark the module as completed and update your progress.`)) {
+        // Mark as complete
+        tracker.markComplete(moduleName);
+        
+        // Update button appearance
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+        
+        // Show success message
+        setTimeout(() => {
+            const completed = Object.values(tracker.modules).filter(m => m.completed).length;
+            const total = Object.keys(tracker.modules).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            if (completed === total) {
+                alert(`🎓 CONGRATULATIONS! 🎓\n\nYou've completed ALL modules!\n\nYour learning journey is 100% complete! 🌟`);
+            } else {
+                alert(`✅ ${moduleFriendlyName} Completed!\n\nOverall Progress: ${percentage}%\n${completed} of ${total} modules completed\n\nKeep going! 💪`);
+            }
+        }, 500);
+    }
+};
+
+// Check module completion status on page load
+window.checkModuleCompletion = function(moduleName) {
+    if (typeof tracker !== 'undefined' && tracker.isModuleComplete(moduleName)) {
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+    }
+};
+
+// Auto-check on page load (call this after tracker is initialized)
+document.addEventListener('DOMContentLoaded', function() {
+    // Get module name from URL or script context
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentModule = urlParams.get('module') || 
+                         (window.location.pathname.includes('alphabets') ? 'alphabets' : 
+                          window.location.pathname.includes('vocabulary') ? 'vocabulary' : 
+                          window.location.pathname.includes('grammar') ? 'grammar' : 
+                          window.location.pathname.includes('assessment') ? 'assessment' : null);
+    
+    if (currentModule) {
+        setTimeout(() => checkModuleCompletion(currentModule), 500);
+    }
+});
+
+console.log('✅ Complete Module script loaded');
+    </script>
+
+    
+<script src="../js/progress-tracker.js"></script>
+
+<!-- Complete Module Functionality -->
+<script>
+// Complete Module Function
+window.completeModule = function(moduleName) {
+    if (typeof tracker === 'undefined') {
+        console.error('Progress tracker not initialized');
+        alert('❌ Error: Progress tracker not loaded. Please refresh the page.');
+        return;
+    }
+    
+    if (tracker.isModuleComplete(moduleName)) {
+        alert('✅ This module is already completed!');
+        return;
+    }
+    
+    const moduleNames = {
+        'alphabets': 'AI Alphabets',
+        'vocabulary': 'Smart Vocabulary',
+        'grammar': 'Intelligent Grammar',
+        'assessment': 'Adaptive Assessment'
+    };
+    
+    const moduleFriendlyName = moduleNames[moduleName] || moduleName;
+    
+    if (confirm(`🎉 Complete ${moduleFriendlyName}?\n\nThis will mark the module as completed and update your progress.`)) {
+        tracker.markComplete(moduleName);
+        
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+        
+        setTimeout(() => {
+            const completed = Object.values(tracker.modules).filter(m => m.completed).length;
+            const total = Object.keys(tracker.modules).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            if (completed === total) {
+                alert(`🎓 CONGRATULATIONS! 🎓\n\nYou've completed ALL modules!\n\nYour learning journey is 100% complete! 🌟`);
+            } else {
+                alert(`✅ ${moduleFriendlyName} Completed!\n\nOverall Progress: ${percentage}%\n${completed} of ${total} modules completed\n\nKeep going! 💪`);
+            }
+        }, 500);
+    }
+};
+
+// Check if module is already completed on page load
+window.checkModuleCompletion = function(moduleName) {
+    if (typeof tracker !== 'undefined' && tracker.isModuleComplete(moduleName)) {
+        const btn = document.getElementById('completeModuleBtn');
+        if (btn) {
+            btn.style.background = 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+            btn.innerHTML = '<span class="action-icon">✓</span><span class="action-text">Completed</span>';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+        }
+    }
+};
+
+// Auto-check on page load
+setTimeout(() => {
+    const currentModule = window.location.pathname.includes('alphabets') ? 'alphabets' : 
+                         window.location.pathname.includes('vocabulary') ? 'vocabulary' : 
+                         window.location.pathname.includes('grammar') ? 'grammar' : 
+                         window.location.pathname.includes('assessment') ? 'assessment' : null;
+    if (currentModule) {
+        checkModuleCompletion(currentModule);
+    }
+}, 500);
+</script>
+</body>
+</html>

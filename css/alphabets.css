@@ -1,0 +1,294 @@
+/* alphabets.css — Lesson Module Styles (extends style.css) */
+
+/* ========== Layout Sections ========== */
+.progress-section {
+    margin: 20px 0;
+}
+
+.progress-bar-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    backdrop-filter: blur(15px);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+/* ========== Lesson Header ========== */
+.lesson-header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    text-align: center;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 0 25px rgba(46, 204, 113, 0.15);
+}
+
+.welcome-title {
+    font-size: 2rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.welcome-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* Info cards under lesson title */
+.learning-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.info-item {
+    background: rgba(255,255,255,0.05);
+    padding: 12px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    text-align: center;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ========== Lesson Content Cards ========== */
+.modules-section {
+    margin-top: 30px;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 20px;
+}
+
+.module-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 25px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(25px);
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-green);
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+}
+
+.module-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.module-title {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+/* ========== Examples & Exercises Cards ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+}
+
+.stat-icon {
+    font-size: 2rem;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* ========== Input & Feedback ========== */
+#exercisesContainer input {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-primary);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+#exercisesContainer input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+/* ========== Navigation Buttons ========== */
+.quick-actions {
+    margin: 40px 0;
+}
+
+.actions-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    background: var(--gradient-success);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 15px 30px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+}
+
+.action-btn.secondary {
+    background: var(--gradient-info);
+}
+
+/* ========== Modals ========== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(10px);
+}
+
+.modal {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: fadeInUp 0.5s ease;
+}
+
+.modal-header {
+    margin-bottom: 15px;
+}
+.modal-title {
+    font-size: 1.8rem;
+    background: var(--gradient-success);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/* In your style.css or inside <style> tag */
+#resultsModal .modal {
+    max-width: 500px;
+    max-height: 80vh; /* Limit height to 80% of viewport */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#resultsModal .modal-body {
+    overflow-y: auto; /* Scroll if content too tall */
+    padding: 20px;
+}
+
+
+.modal-actions {
+    margin-top: 25px;
+}
+
+@keyframes fadeInUp {
+    0% { transform: translateY(40px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* ========== Loading Overlay ========== */
+#loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(20px);
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+    .learning-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modules-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .actions-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .modal {
+        padding: 20px;
+    }
+}
